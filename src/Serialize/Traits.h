@@ -240,7 +240,7 @@ namespace                                                               \
 #pragma vera-pop
 
 #define ThorsAnvil_NoParent(Count, DataType, ...)           typedef DataType BUILDTEMPLATETYPEVALUE(THOR_TYPENAMEVALUEACTION, Count)    Root;
-#define ThorsAnvil_Parent(Count, ParentType, DataType, ...) typedef ParentType  Parent; \
+#define ThorsAnvil_Parent(ParentType)                       typedef std::tuple<ParentType>  Parent; \
                                                             typedef typename Traits<ParentType>::Root Root;
 
 #define ThorsAnvil_Template_MakeTrait(Count, ...)                       \
@@ -263,7 +263,7 @@ class Traits<DataType>                                                  \
 DO_ASSERT(DataType)
 
 #define ThorsAnvil_Template_ExpandTrait(Count, ParentType, ...)         \
-    ThorsAnvil_MakeTrait_Base(ThorsAnvil_Parent(Count, ParentType, __VA_ARGS__, 1), Parent, Count, __VA_ARGS__, 1) \
+    ThorsAnvil_MakeTrait_Base(ThorsAnvil_Parent(ParentType), Parent, Count, __VA_ARGS__, 1) \
     static_assert(true, "")
 
 #define ThorsAnvil_ExpandTrait(ParentType, ...)                     ThorsAnvil_ExpandTrait_Base(ParentType, __VA_ARGS__, 1)
@@ -275,7 +275,7 @@ DO_ASSERT(DataType)
         ::ThorsAnvil::Serialize::Traits<ParentType>::type != ThorsAnvil::Serialize::TraitType::Invalid, \
         "Parent type must have Serialization Traits defined"            \
     );                                                                  \
-    ThorsAnvil_MakeTrait_Base(ThorsAnvil_Parent(0, ParentType, DataType, __VA_ARGS__), Parent, 0, DataType, __VA_ARGS__); \
+    ThorsAnvil_MakeTrait_Base(ThorsAnvil_Parent(ParentType), Parent, 0, DataType, __VA_ARGS__); \
     ThorsAnvil_RegisterPolyMorphicType_Internal(DataType, 1)            \
     static_assert(true, "")
 

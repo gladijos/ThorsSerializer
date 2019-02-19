@@ -21,11 +21,13 @@ class ApplyActionToParent<TraitType::Parent, T, I>
     public:
         void printParentMembers(Serializer& serializer, T const& object)
         {
-            serializer.printObjectMembers(static_cast<typename Traits<T>::Parent const&>(object));
+            using TheParent = typename std::tuple_element<0, typename Traits<T>::Parent>::type;
+            serializer.printObjectMembers(static_cast<TheParent const&>(object));
         }
         bool scanParentMember(DeSerializer& deSerializer, I const& key, T& object)
         {
-            return deSerializer.scanObjectMembers(key, static_cast<typename Traits<T>::Parent&>(object));
+            using TheParent = typename std::tuple_element<0, typename Traits<T>::Parent>::type;
+            return deSerializer.scanObjectMembers(key, static_cast<TheParent&>(object));
         }
 };
 /* ------------------- HeedAllValues ---------------------------- */
@@ -49,7 +51,8 @@ template<typename T>
 typename std::enable_if<HasParent<T>::value>::type
 heedAllParentMembers(std::map<std::string, bool> const& membersFound)
 {
-    HeedAllValues<typename Traits<T>::Parent>   heedParent;
+    using TheParent = typename std::tuple_element<0, typename Traits<T>::Parent>::type;
+    HeedAllValues<TheParent>   heedParent;
     heedParent(membersFound);
 }
 
