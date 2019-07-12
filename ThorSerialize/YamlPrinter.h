@@ -64,9 +64,5 @@ class YamlPrinter: public PrinterInterface
     }
 }
 
-#if defined(HEADER_ONLY) && HEADER_ONLY == 1
-#include "YamlPrinter.source"
-#endif
-
 #endif
 #endif

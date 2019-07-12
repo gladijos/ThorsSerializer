@@ -1,7 +1,6 @@
 #ifndef THORS_ANVIL_SERIALIZER_JSON_MANUAL_LEXER_H
 #define THORS_ANVIL_SERIALIZER_JSON_MANUAL_LEXER_H
 
-#include "SerializeConfig.h"
 #include "Serialize.h"
 #include <istream>
 
@@ -52,9 +51,5 @@ inline T JsonManualLexer::scan() const
 }
     }
 }
-
-#if defined(HEADER_ONLY) && HEADER_ONLY == 1
-#include "JsonManualLexer.source"
-#endif
 
 #endif

@@ -5,7 +5,6 @@
  *  See documentation in JsonParser.h
  */
 
-#include "SerializeConfig.h"
 #include "Serialize.h"
 #include <vector>
 
@@ -54,9 +53,5 @@ class JsonPrinter: public PrinterInterface
 
     }
 }
-
-#if defined(HEADER_ONLY) && HEADER_ONLY == 1
-#include "JsonPrinter.source"
-#endif
 
 #endif
