@@ -84,6 +84,9 @@
 /* Version number of package */
 #define VERSION "0.1"
 
+/* Header Only Version Enabled */
+#define HEADER_ONLY 1
+
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
 #if defined AC_APPLE_UNIVERSAL_BUILD
