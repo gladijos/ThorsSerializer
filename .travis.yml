@@ -2,8 +2,8 @@ git:
   submodules: false
 os: windows
 include:
-    - os: windows
-        env: CC=CL.exe CXX=CL.exe
+  - os: windows
+    env: CC=CL.exe CXX=CL.exe
 language: cpp
 before_install:
 install:
