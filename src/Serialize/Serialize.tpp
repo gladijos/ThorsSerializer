@@ -415,7 +415,7 @@ class DeSerializationForBlock<TraitType::Array, T>
         DeSerializationForBlock(DeSerializer& parent, ParserInterface& parser)
             : parent(parent)
             , parser(parser)
-            , index(-1)
+            , index(0)
         {
             ParserInterface::ParserToken    tokenType = parser.getToken();
 
@@ -428,7 +428,10 @@ class DeSerializationForBlock<TraitType::Array, T>
         {
             while (hasMoreValue())
             {
-                parent.scanObjectMembers(index, object);
+                if (parent.scanObjectMembers(index, object))
+                {
+                    ++index;
+                }
             }
         }
         bool hasMoreValue()
@@ -438,7 +441,6 @@ class DeSerializationForBlock<TraitType::Array, T>
             if (result)
             {
                 parser.pushBackToken(tokenType);
-                ++index;
             }
             return result;
         }
@@ -518,8 +520,7 @@ inline bool DeSerializer::scanMembers(std::string const& key, T& object, std::tu
 template<typename T, typename I, typename Action>
 inline bool DeSerializer::scanMembers(I const& key, T& object, Action action)
 {
-    action(parser, key, object);
-    return true;
+    return action(parser, key, object);
 }
 
 template<typename T, typename I>

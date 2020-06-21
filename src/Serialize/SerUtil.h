@@ -164,13 +164,14 @@ class ContainerMemberExtractorInserter
                 valuePutter.putValue(loop);
             }
         }
-        void operator()(ParserInterface& parser, std::size_t const& index, C& object) const
+        bool operator()(ParserInterface& parser, std::size_t const& index, C& object) const
         {
             V                   data{};
             GetValueType<V>     valueGetter(parser, data);
 
             MemberInserter<C>   inserter(object);
             inserter.add(index, std::move(data));
+            return true;
         }
 };
 template<typename C, typename V = typename C::value_type>
@@ -190,11 +191,12 @@ class ContainerMemberExtractorEmplacer
                 valuePutter.putValue(loop);
             }
         }
-        void operator()(ParserInterface& parser, std::size_t const& index, C& object) const
+        bool operator()(ParserInterface& parser, std::size_t const& index, C& object) const
         {
             MemberEmplacer<C>   extractor(object);
             V&                  data = extractor.get(index);
             GetValueType<V>     valueGetter(parser, data);
+            return true;
         }
 };
 
@@ -546,10 +548,11 @@ class Traits<std::map<std::string, Value>>
                         valuePutter.putValue(loop.second);
                     }
                 }
-                void operator()(ParserInterface& parser, std::string const& key, std::map<std::string, Value>& object) const
+                bool operator()(ParserInterface& parser, std::string const& key, std::map<std::string, Value>& object) const
                 {
                     Value&                  data = object[key];
                     GetValueType<Value>     valueGetter(parser, data);
+                    return true;
                 }
         };
 
@@ -611,11 +614,12 @@ class Traits<std::unordered_map<std::string, Value>>
                         valuePutter.putValue(loop.second);
                     }
                 }
-                void operator()(ParserInterface& parser, std::string const& key, std::unordered_map<std::string, Value>& object) const
+                bool operator()(ParserInterface& parser, std::string const& key, std::unordered_map<std::string, Value>& object) const
                 {
                     Value                   data{};
                     GetValueType<Value>     valueGetter(parser, data);
                     object.insert(std::make_pair(std::move(key), std::move(data)));
+                    return true;
                 }
         };
 
@@ -673,11 +677,12 @@ class Traits<std::unordered_multimap<std::string, Value>>
                         valuePutter.putValue(loop.second);
                     }
                 }
-                void operator()(ParserInterface& parser, std::string const& key, std::unordered_multimap<std::string, Value>& object) const
+                bool operator()(ParserInterface& parser, std::string const& key, std::unordered_multimap<std::string, Value>& object) const
                 {
                     Value                   data{};
                     GetValueType<Value>     valueGetter(parser, data);
                     object.insert(std::make_pair(std::move(key), std::move(data)));
+                    return true;
                 }
         };
 
@@ -735,11 +740,12 @@ class Traits<std::multimap<std::string, Value>>
                         valuePutter.putValue(loop.second);
                     }
                 }
-                void operator()(ParserInterface& parser, std::string const& key, std::multimap<std::string, Value>& object) const
+                bool operator()(ParserInterface& parser, std::string const& key, std::multimap<std::string, Value>& object) const
                 {
                     Value                   data{};
                     GetValueType<Value>     valueGetter(parser, data);
                     object.insert(std::make_pair(std::move(key), std::move(data)));
+                    return true;
                 }
         };
 
@@ -810,9 +816,10 @@ class ContainerTuppleExtractor
         {
             printTupleValues(printer, object, std::make_index_sequence<sizeof...(Args)>());
         }
-        void operator()(ParserInterface& parser, std::size_t const& index, C& object) const
+        bool operator()(ParserInterface& parser, std::size_t const& index, C& object) const
         {
             parseTupleValues(parser, index, object, std::make_index_sequence<sizeof...(Args)>());
+            return true;
         }
 };
 
