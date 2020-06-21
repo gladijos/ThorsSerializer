@@ -426,6 +426,7 @@ class DeSerializationForBlock<TraitType::Array, T>
 
         void scanObject(T& object)
         {
+            Traits<T>::getMembers().resetObjectMembers(object);
             while (hasMoreValue())
             {
                 if (parent.scanObjectMembers(index, object))
@@ -433,6 +434,7 @@ class DeSerializationForBlock<TraitType::Array, T>
                     ++index;
                 }
             }
+            Traits<T>::getMembers().truncObjectMembers(index, object);
         }
         bool hasMoreValue()
         {

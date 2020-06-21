@@ -173,6 +173,16 @@ class ContainerMemberExtractorInserter
             inserter.add(index, std::move(data));
             return true;
         }
+        void resetObjectMembers(C& object) const
+        {
+            MemberInserter<C>   inserter(object);
+            inserter.clear();
+        }
+        void truncObjectMembers(std::size_t const& index, C& object) const
+        {
+            MemberInserter<C>   inserter(object);
+            inserter.resize(index);
+        }
 };
 template<typename C, typename V = typename C::value_type>
 class ContainerMemberExtractorEmplacer
@@ -197,6 +207,16 @@ class ContainerMemberExtractorEmplacer
             V&                  data = extractor.get(index);
             GetValueType<V>     valueGetter(parser, data);
             return true;
+        }
+        void resetObjectMembers(C& object) const
+        {
+            MemberEmplacer<C>   extractor(object);
+            extractor.clear();
+        }
+        void truncObjectMembers(std::size_t const& index, C& object) const
+        {
+            MemberEmplacer<C>   extractor(object);
+            extractor.resize(index);
         }
 };
 
@@ -230,6 +250,8 @@ class MemberInserter<std::initializer_list<T>>
         {
             //static_assert(false, "Can not de-serialize and initializer list");
         }
+        void clear()                        {}
+        void resize(std::size_t /*index*/)  {}
 };
 
 template<typename T>
@@ -258,6 +280,8 @@ class MemberEmplacer<std::array<T, N>>
         {
             return container[index];
         }
+        void clear()                        {}
+        void resize(std::size_t /*index*/)  {}
 };
 
 template<typename T, std::size_t N>
@@ -282,11 +306,20 @@ class MemberEmplacer<std::list<T, Allocator>>
         MemberEmplacer(std::list<T, Allocator>& container)
             : container(container)
         {}
-        T& get(std::size_t const&)
+        T& get(std::size_t const& index)
         {
-            container.emplace_back();
+            if (index < container.size())
+            {
+                container.resize(index);
+            }
+            if (index == container.size())
+            {
+                container.emplace_back();
+            }
             return container.back();
         }
+        void clear()                        {container.clear();}
+        void resize(std::size_t index)      {container.resize(index);}
 };
 
 template<typename T, typename Allocator>
@@ -311,11 +344,20 @@ class MemberEmplacer<std::vector<T, Allocator>>
         MemberEmplacer(std::vector<T, Allocator>& container)
             : container(container)
         {}
-        T& get(std::size_t const&)
+        T& get(std::size_t const& index)
         {
-            container.emplace_back();
+            if (index < container.size())
+            {
+                container.resize(index);
+            }
+            if (index == container.size())
+            {
+                container.emplace_back();
+            }
             return container.back();
         }
+        void clear()                        {container.clear();}
+        void resize(std::size_t index)      {container.resize(index);}
 };
 template<typename T, typename Allocator>
 class Traits<std::vector<T, Allocator>>
@@ -338,10 +380,16 @@ class MemberInserter<std::vector<bool, Allocator>>
         MemberInserter(std::vector<bool, Allocator>& container)
             : container(container)
         {}
-        void add(std::size_t const&, bool value)
+        void add(std::size_t const& index, bool value)
         {
+            if (index < container.size())
+            {
+                container.resize(index);
+            }
             container.push_back(value);
         }
+        void clear()                        {container.clear();}
+        void resize(std::size_t index)      {container.resize(index);}
 };
 template<typename Allocator>
 class Traits<std::vector<bool, Allocator>>
@@ -365,11 +413,20 @@ class MemberEmplacer<std::deque<T, Allocator>>
         MemberEmplacer(std::deque<T, Allocator>& container)
             : container(container)
         {}
-        T& get(std::size_t const&)
+        T& get(std::size_t const& index)
         {
-            container.emplace_back();
+            if (index < container.size())
+            {
+                container.resize(index);
+            }
+            if (index == container.size())
+            {
+                container.emplace_back();
+            }
             return container.back();
         }
+        void clear()                        {container.clear();}
+        void resize(std::size_t index)      {container.resize(index);}
 };
 
 template<typename T, typename Allocator>
@@ -398,6 +455,8 @@ class MemberInserter<std::set<Key, Compare, Allocator>>
         {
             container.insert(std::forward<Key>(value));
         }
+        void clear()                        {container.clear();}
+        void resize(std::size_t /*index*/)  {}
 };
 
 template<typename Key, typename Compare, typename Allocator>
@@ -426,6 +485,8 @@ class MemberInserter<std::unordered_set<Key, Hash, KeyEqual, Allocator>>
         {
             container.insert(std::forward<Key>(value));
         }
+        void clear()                        {container.clear();}
+        void resize(std::size_t /*index*/)  {}
 };
 
 template<typename Key, typename Hash, typename KeyEqual, typename Allocator>
@@ -454,6 +515,8 @@ class MemberInserter<std::multiset<Key, Compare, Allocator>>
         {
             container.insert(std::forward<Key>(value));
         }
+        void clear()                        {container.clear();}
+        void resize(std::size_t /*index*/)  {}
 };
 
 template<typename Key, typename Compare, typename Allocator>
@@ -482,6 +545,8 @@ class MemberInserter<std::unordered_multiset<Key, Hash, KeyEqual, Allocator>>
         {
             container.insert(std::forward<Key>(value));
         }
+        void clear()                        {container.clear();}
+        void resize(std::size_t /*index*/)  {}
 };
 
 template<typename Key, typename Hash, typename KeyEqual, typename Allocator>
@@ -510,6 +575,8 @@ class MemberInserter<std::map<Key, T, Compare, Allocator>>
         {
             container.insert(std::forward<std::pair<Key, T>>(value));
         }
+        void clear()                        {container.clear();}
+        void resize(std::size_t /*index*/)  {}
 };
 
 template<typename Key, typename T, typename Compare, typename Allocator>
@@ -576,6 +643,8 @@ class MemberInserter<std::unordered_map<Key, T, Hash, KeyEqual, Allocator>>
         {
             container.insert(std::forward<std::pair<Key, T>>(value));
         }
+        void clear()                        {container.clear();}
+        void resize(std::size_t /*index*/)  {}
 };
 
 template<typename Key, typename T, typename Hash, typename KeyEqual, typename Allocator>
@@ -643,6 +712,8 @@ class MemberInserter<std::unordered_multimap<Key, T, Hash, KeyEqual, Allocator>>
         {
             container.insert(std::forward<std::pair<Key, T>>(value));
         }
+        void clear()                        {container.clear();}
+        void resize(std::size_t /*index*/)  {}
 };
 
 template<typename Key, typename T, typename Hash, typename KeyEqual, typename Allocator>
@@ -706,6 +777,8 @@ class MemberInserter<std::multimap<Key, T, Compare, Allocator>>
         {
             container.insert(std::forward<std::pair<Key, T>>(value));
         }
+        void clear()                        {container.clear();}
+        void resize(std::size_t /*index*/)  {}
 };
 
 template<typename Key, typename T, typename Compare, typename Allocator>
@@ -821,6 +894,8 @@ class ContainerTuppleExtractor
             parseTupleValues(parser, index, object, std::make_index_sequence<sizeof...(Args)>());
             return true;
         }
+        void resetObjectMembers(C& /*object*/) const {}
+        void truncObjectMembers(std::size_t const& /*index*/, C& /*object*/) const {}
 };
 
 /*
