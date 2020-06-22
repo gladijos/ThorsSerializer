@@ -84,6 +84,7 @@ void ParserInterface::ignoreTheValue()
 #include "test/ExceptionTest.h"
 #include "test/Twitter.h"
 #include "test/SmartPointerTest.h"
+#include "test/IgnoreUneededData.h"
 
 
 template void ThorsAnvil::Serialize::Serializer::print<BinaryParserTest::Base>(BinaryParserTest::Base const&);
@@ -177,4 +178,5 @@ template void ThorsAnvil::Serialize::Serializer::print<std::unique_ptr<SmartPtrT
 template void ThorsAnvil::Serialize::DeSerializer::parse<std::shared_ptr<SmartPtrTest::Object>>(std::shared_ptr<SmartPtrTest::Object>&);
 template void ThorsAnvil::Serialize::Serializer::print<std::shared_ptr<SmartPtrTest::Object>>(std::shared_ptr<SmartPtrTest::Object> const&);
 
+template void ThorsAnvil::Serialize::DeSerializer::parse<IgnoreUneededData::Thing>(IgnoreUneededData::Thing&);
 #endif
